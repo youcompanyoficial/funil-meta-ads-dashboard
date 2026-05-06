@@ -1,38 +1,46 @@
+import { useState } from 'react';
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
-import ErrorBoundary from "./components/ErrorBoundary";
+import DashboardLayout from "@/components/DashboardLayout";
+import FunnelOverview from "@/pages/FunnelOverview";
+import FunnelStages from "@/pages/FunnelStages";
+import CreativesManager from "@/pages/CreativesManager";
+import BudgetManager from "@/pages/BudgetManager";
+import ImplementationChecklist from "@/pages/ImplementationChecklist";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
-
-
-function Router() {
-  return (
-    <Switch>
-      <Route path={"/"} component={Home} />
-      <Route path={"/404"} component={NotFound} />
-      {/* Final fallback route */}
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function App() {
+  const [activeSection, setActiveSection] = useState('overview');
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case 'overview':
+        return <FunnelOverview onStageClick={(stageId) => console.log('Clicked:', stageId)} />;
+      case 'stages':
+        return <FunnelStages />;
+      case 'creatives':
+        return <CreativesManager />;
+      case 'budget':
+        return <BudgetManager />;
+      case 'checklist':
+        return <ImplementationChecklist />;
+      default:
+        return <FunnelOverview />;
+    }
+  };
+
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="light">
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <DashboardLayout
+            activeSection={activeSection}
+            onSectionChange={setActiveSection}
+          >
+            {renderContent()}
+          </DashboardLayout>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>
