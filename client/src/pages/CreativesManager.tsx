@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -100,6 +101,17 @@ const statusConfig = {
 };
 
 export default function CreativesManager() {
+  const [usedCreatives, setUsedCreatives] = useState<string[]>([]);
+  const [inProduction, setInProduction] = useState<string[]>([]);
+
+  const handleUseCreative = (creativeId: string) => {
+    setUsedCreatives([...usedCreatives, creativeId]);
+  };
+
+  const handleStartProduction = (creativeId: string) => {
+    setInProduction([...inProduction, creativeId]);
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -172,20 +184,32 @@ export default function CreativesManager() {
 
                     <div className="flex gap-2 pt-4 border-t border-border">
                       {creative.status === 'pending' && (
-                        <button className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium flex items-center justify-center gap-2">
+                        <button 
+                          onClick={() => handleStartProduction(creative.id)}
+                          disabled={inProduction.includes(creative.id)}
+                          className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
                           <Play className="w-4 h-4" />
-                          Começar Produção
+                          {inProduction.includes(creative.id) ? 'Em Produção' : 'Começar Produção'}
                         </button>
                       )}
                       {creative.status === 'ready' && (
-                        <button className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium flex items-center justify-center gap-2">
+                        <button 
+                          onClick={() => handleUseCreative(creative.id)}
+                          disabled={usedCreatives.includes(creative.id)}
+                          className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors text-sm font-medium flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
                           <Play className="w-4 h-4" />
-                          Usar este Criativo
+                          {usedCreatives.includes(creative.id) ? 'Criativo Ativo' : 'Usar este Criativo'}
                         </button>
                       )}
                       {creative.status === 'existing' && (
-                        <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
-                          Adaptar para Anúncio
+                        <button 
+                          onClick={() => handleUseCreative(creative.id)}
+                          disabled={usedCreatives.includes(creative.id)}
+                          className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {usedCreatives.includes(creative.id) ? 'Criativo Ativo' : 'Adaptar para Anúncio'}
                         </button>
                       )}
                     </div>

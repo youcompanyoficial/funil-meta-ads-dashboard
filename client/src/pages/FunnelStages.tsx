@@ -90,6 +90,8 @@ const stagesData = [
 
 export default function FunnelStages() {
   const [expandedStage, setExpandedStage] = useState<number | null>(1);
+  const [activeStages, setActiveStages] = useState<number[]>([]);
+  const [stageStatus, setStageStatus] = useState<{ [key: number]: 'idle' | 'active' | 'paused' }>({});
 
   return (
     <div className="space-y-6">
@@ -108,8 +110,16 @@ export default function FunnelStages() {
               className="w-full p-6 flex items-center justify-between hover:bg-secondary/50 transition-colors"
             >
               <div className="flex items-center gap-4 text-left flex-1">
-                <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg font-bold text-primary">{stage.id}</span>
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  activeStages.includes(stage.id) 
+                    ? 'bg-green-100' 
+                    : 'bg-primary/10'
+                }`}>
+                  <span className={`text-lg font-bold ${
+                    activeStages.includes(stage.id) 
+                      ? 'text-green-600' 
+                      : 'text-primary'
+                  }`}>{stage.id}</span>
                 </div>
                 <div>
                   <h3 className="text-lg font-semibold text-foreground">{stage.name}</h3>
@@ -183,11 +193,26 @@ export default function FunnelStages() {
 
                 {/* Ações */}
                 <div className="flex gap-2 pt-4 border-t border-border">
-                  <Button className="bg-primary hover:bg-primary/90 flex-1">
+                  <Button 
+                    className="bg-primary hover:bg-primary/90 flex-1"
+                    onClick={() => {
+                      setActiveStages([...activeStages, stage.id]);
+                      setStageStatus({ ...stageStatus, [stage.id]: 'active' });
+                    }}
+                    disabled={activeStages.includes(stage.id)}
+                  >
                     <Play className="w-4 h-4 mr-2" />
-                    Ativar Etapa
+                    {activeStages.includes(stage.id) ? 'Etapa Ativa' : 'Ativar Etapa'}
                   </Button>
-                  <Button variant="outline" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1"
+                    onClick={() => {
+                      setActiveStages(activeStages.filter(id => id !== stage.id));
+                      setStageStatus({ ...stageStatus, [stage.id]: 'paused' });
+                    }}
+                    disabled={!activeStages.includes(stage.id)}
+                  >
                     <Pause className="w-4 h-4 mr-2" />
                     Pausar
                   </Button>
