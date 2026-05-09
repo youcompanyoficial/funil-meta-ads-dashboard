@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Menu, X, Target, Zap, DollarSign, CheckCircle2 } from 'lucide-react';
+import { Menu, X, Target, Zap, DollarSign, CheckCircle2, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface DashboardLayoutProps {
@@ -20,6 +20,7 @@ export default function DashboardLayout({
     { id: 'stages', label: 'Etapas do Funil', icon: Zap },
     { id: 'creatives', label: 'Criativos', icon: Zap },
     { id: 'budget', label: 'Orçamento', icon: DollarSign },
+    { id: 'analysis', label: 'Análise Semanal', icon: BarChart3 },
     { id: 'checklist', label: 'Checklist', icon: CheckCircle2 },
   ];
 

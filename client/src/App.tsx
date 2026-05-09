@@ -7,6 +7,7 @@ import FunnelStages from "@/pages/FunnelStages";
 import CreativesManager from "@/pages/CreativesManager";
 import BudgetManager from "@/pages/BudgetManager";
 import ImplementationChecklist from "@/pages/ImplementationChecklist";
+import WeeklyAnalysis from "@/pages/WeeklyAnalysis";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 
@@ -25,6 +26,8 @@ function App() {
         return <BudgetManager />;
       case 'checklist':
         return <ImplementationChecklist />;
+      case 'analysis':
+        return <WeeklyAnalysis />;
       default:
         return <FunnelOverview />;
     }
