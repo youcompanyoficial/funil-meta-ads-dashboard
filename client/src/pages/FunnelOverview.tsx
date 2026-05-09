@@ -1,7 +1,10 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import FunnelStageCard from '@/components/FunnelStageCard';
 import { TrendingUp, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface FunnelOverviewProps {
   onStageClick?: (stageId: string) => void;
@@ -47,7 +50,12 @@ const stages = [
 ];
 
 export default function FunnelOverview({ onStageClick }: FunnelOverviewProps) {
+  const [selectedStage, setSelectedStage] = useState<typeof stages[0] | null>(null);
   const totalBudget = stages.reduce((sum, stage) => sum + stage.budget, 0);
+
+  const handleStartImplementation = () => {
+    toast.success('Implementação iniciada! Comece gravando os vídeos da Etapa 1 e 2.');
+  };
 
   return (
     <div className="space-y-8">
@@ -61,7 +69,7 @@ export default function FunnelOverview({ onStageClick }: FunnelOverviewProps) {
             Gerencie sua estratégia de vendas em 4 etapas
           </p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90">
+        <Button className="bg-primary hover:bg-primary/90" onClick={handleStartImplementation}>
           <TrendingUp className="w-4 h-4 mr-2" />
           Iniciar Implementação
         </Button>
@@ -130,7 +138,10 @@ export default function FunnelOverview({ onStageClick }: FunnelOverviewProps) {
               budget={stage.budget}
               objective={stage.objective}
               status={stage.status}
-              onClick={() => onStageClick?.(stage.id)}
+              onClick={() => {
+                setSelectedStage(stage);
+                onStageClick?.(stage.id);
+              }}
             />
           ))}
         </div>
@@ -172,6 +183,59 @@ export default function FunnelOverview({ onStageClick }: FunnelOverviewProps) {
           </div>
         </div>
       </Card>
+
+      {/* Modal de Detalhes */}
+      <Dialog open={!!selectedStage} onOpenChange={(open) => !open && setSelectedStage(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Etapa {selectedStage?.number}: {selectedStage?.title}</DialogTitle>
+            <DialogDescription>{selectedStage?.description}</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <p className="text-sm font-semibold text-foreground mb-1">Orçamento Diário</p>
+              <p className="text-2xl font-bold text-primary">R$ {selectedStage?.budget.toFixed(2)}</p>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground mb-1">Objetivo</p>
+              <p className="text-foreground">{selectedStage?.objective}</p>
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground mb-2">Próximas Ações</p>
+              <ul className="space-y-2 text-sm text-foreground">
+                {selectedStage?.number === 1 && (
+                  <>
+                    <li>✓ Gravar vídeo seu apresentando o produto</li>
+                    <li>✓ Criar público de engajamento</li>
+                    <li>✓ Ativar campanha de seguidores</li>
+                  </>
+                )}
+                {selectedStage?.number === 2 && (
+                  <>
+                    <li>✓ Preparar criativos para público frio</li>
+                    <li>✓ Configurar direcionamento para WhatsApp</li>
+                    <li>✓ Testar diferentes mensagens</li>
+                  </>
+                )}
+                {selectedStage?.number === 3 && (
+                  <>
+                    <li>✓ Criar público quente com engajadores</li>
+                    <li>✓ Preparar oferta especial</li>
+                    <li>✓ Configurar conversão direta</li>
+                  </>
+                )}
+                {selectedStage?.number === 4 && (
+                  <>
+                    <li>✓ Coletar depoimentos de clientes</li>
+                    <li>✓ Gravar vídeos com prova social</li>
+                    <li>✓ Ativar campanhas de remarketing</li>
+                  </>
+                )}
+              </ul>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
