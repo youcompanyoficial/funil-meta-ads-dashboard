@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,44 +17,24 @@ interface Campaign {
 
 const campaignsData: Campaign[] = [
   {
-    name: 'VDS-ADSTRIGENTE —-05',
-    investment: 46.37,
-    impressions: 1926,
-    clicks: 69,
-    ctr: 3.58,
-    cpc: 0.67,
-    status: 'excellent',
-    recommendation: 'Escale essa campanha! Aumente o orçamento para R$ 70-80/dia. Melhor CTR (3,58%) e bom CPC.',
-  },
-  {
     name: 'ENGAJ-VIBRO',
-    investment: 48.53,
-    impressions: 2537,
-    clicks: 88,
-    ctr: 3.47,
-    cpc: 0.55,
+    investment: 72.11,
+    impressions: 3828,
+    clicks: 139,
+    ctr: 3.63,
+    cpc: 0.52,
     status: 'excellent',
-    recommendation: 'Melhor CPC (R$ 0,55)! Mantenha essa campanha rodando. Produto está gerando bom retorno.',
+    recommendation: 'Melhor performance! CTR 3.63% e CPC R$ 0.52. Escale para R$ 100/dia. Produto está gerando excelente retorno.',
   },
   {
-    name: 'teste story',
-    investment: 14.88,
-    impressions: 542,
-    clicks: 17,
-    ctr: 3.14,
-    cpc: 0.88,
-    status: 'good',
-    recommendation: 'Performance boa (CTR 3,14%). Renomeie para um nome definitivo e considere escalar após validação.',
-  },
-  {
-    name: 'TESTE TRAFEGO',
-    investment: 15.35,
-    impressions: 610,
-    clicks: 19,
-    ctr: 3.11,
-    cpc: 0.81,
-    status: 'good',
-    recommendation: 'CTR consistente (3,11%). Mantenha rodando e teste novos públicos para expandir alcance.',
+    name: 'VDS-ADSTRIGENTE —-05',
+    investment: 75.79,
+    impressions: 2879,
+    clicks: 104,
+    ctr: 3.61,
+    cpc: 0.73,
+    status: 'excellent',
+    recommendation: 'Excelente CTR (3.61%)! Aumente o orçamento para R$ 90-100/dia. Mantém consistência de performance.',
   },
   {
     name: 'ENGAJ-PICO PULSE',
@@ -63,7 +44,7 @@ const campaignsData: Campaign[] = [
     ctr: 2.01,
     cpc: 1.47,
     status: 'warning',
-    recommendation: 'CTR abaixo da média (2,01%). Teste novos criativos ou públicos. Se não melhorar em 3 dias, pause.',
+    recommendation: 'CTR abaixo da média (2.01%). Teste novos criativos ou pausar em 3 dias se não melhorar.',
   },
   {
     name: 'EGJ-Bubble Vibes',
@@ -73,270 +54,273 @@ const campaignsData: Campaign[] = [
     ctr: 1.80,
     cpc: 1.79,
     status: 'critical',
-    recommendation: 'Pior performance (CTR 1,80%, CPC R$ 1,79). Pause imediatamente e reformule criativos antes de reiniciar.',
+    recommendation: 'Pior performance (CTR 1.80%, CPC R$ 1.79). Pause imediatamente e teste novos criativos.',
   },
 ];
 
-const statusConfig = {
-  excellent: {
-    label: 'Excelente',
-    color: 'bg-green-100 text-green-700',
-    icon: TrendingUp,
-    bgCard: 'bg-green-50 border-green-200',
-  },
-  good: {
-    label: 'Bom',
-    color: 'bg-blue-100 text-blue-700',
-    icon: CheckCircle2,
-    bgCard: 'bg-blue-50 border-blue-200',
-  },
-  warning: {
-    label: 'Atenção',
-    color: 'bg-orange-100 text-orange-700',
-    icon: AlertCircle,
-    bgCard: 'bg-orange-50 border-orange-200',
-  },
-  critical: {
-    label: 'Crítico',
-    color: 'bg-red-100 text-red-700',
-    icon: TrendingDown,
-    bgCard: 'bg-red-50 border-red-200',
-  },
-};
-
 export default function WeeklyAnalysis() {
-  const totalInvestment = campaignsData.reduce((sum, c) => sum + c.investment, 0);
-  const totalClicks = campaignsData.reduce((sum, c) => sum + c.clicks, 0);
-  const totalImpressions = campaignsData.reduce((sum, c) => sum + c.impressions, 0);
-  const averageCTR = (totalClicks / totalImpressions) * 100;
-  const averageCPC = totalInvestment / totalClicks;
+  const [activeTab, setActiveTab] = useState('overview');
 
-  const excellentCampaigns = campaignsData.filter(c => c.status === 'excellent').length;
-  const criticalCampaigns = campaignsData.filter(c => c.status === 'critical').length;
+  const totalInvestment = campaignsData.reduce((sum, c) => sum + c.investment, 0);
+  const totalImpressions = campaignsData.reduce((sum, c) => sum + c.impressions, 0);
+  const totalClicks = campaignsData.reduce((sum, c) => sum + c.clicks, 0);
+  const avgCTR = (totalClicks / totalImpressions * 100).toFixed(2);
+  const avgCPC = (totalInvestment / totalClicks).toFixed(2);
+
+  const excellentCampaigns = campaignsData.filter(c => c.status === 'excellent');
+  const criticalCampaigns = campaignsData.filter(c => c.status === 'critical' || c.status === 'warning');
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'excellent':
+        return <CheckCircle2 className="w-5 h-5 text-green-600" />;
+      case 'good':
+        return <TrendingUp className="w-5 h-5 text-blue-600" />;
+      case 'warning':
+        return <AlertCircle className="w-5 h-5 text-yellow-600" />;
+      case 'critical':
+        return <TrendingDown className="w-5 h-5 text-red-600" />;
+      default:
+        return null;
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'excellent':
+        return 'bg-green-50 border-green-200';
+      case 'good':
+        return 'bg-blue-50 border-blue-200';
+      case 'warning':
+        return 'bg-yellow-50 border-yellow-200';
+      case 'critical':
+        return 'bg-red-50 border-red-200';
+      default:
+        return 'bg-gray-50 border-gray-200';
+    }
+  };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
+      {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-foreground mb-2">Análise Semanal de Campanhas</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-2">
+          Análise Semanal de Campanhas
+        </h1>
         <p className="text-muted-foreground">
-          Semana de 01/05 a 08/05/2026 - Insights e recomendações para otimizar suas campanhas
+          Período: 29 de Abril a 09 de Maio de 2026 (Últimos 10 dias)
         </p>
       </div>
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="p-4 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
-          <p className="text-sm text-muted-foreground mb-1">Investimento Total</p>
-          <p className="text-2xl font-bold text-foreground">R$ {totalInvestment.toFixed(2)}</p>
-          <p className="text-xs text-muted-foreground mt-1">6 campanhas ativas</p>
+        <Card className="p-6 bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Investimento Total</p>
+              <p className="text-2xl font-bold text-foreground">R$ {totalInvestment.toFixed(2)}</p>
+            </div>
+            <Zap className="w-6 h-6 text-primary" />
+          </div>
         </Card>
 
-        <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-          <p className="text-sm text-muted-foreground mb-1">CTR Médio</p>
-          <p className="text-2xl font-bold text-blue-700">{averageCTR.toFixed(2)}%</p>
-          <p className="text-xs text-muted-foreground mt-1">Excelente performance</p>
+        <Card className="p-6 bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">Impressões</p>
+              <p className="text-2xl font-bold text-foreground">{totalImpressions.toLocaleString()}</p>
+            </div>
+            <TrendingUp className="w-6 h-6 text-blue-600" />
+          </div>
         </Card>
 
-        <Card className="p-4 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-          <p className="text-sm text-muted-foreground mb-1">CPC Médio</p>
-          <p className="text-2xl font-bold text-green-700">R$ {averageCPC.toFixed(2)}</p>
-          <p className="text-xs text-muted-foreground mt-1">{totalClicks} cliques gerados</p>
+        <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">CTR Médio</p>
+              <p className="text-2xl font-bold text-foreground">{avgCTR}%</p>
+            </div>
+            <CheckCircle2 className="w-6 h-6 text-purple-600" />
+          </div>
         </Card>
 
-        <Card className="p-4 bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-          <p className="text-sm text-muted-foreground mb-1">Campanhas Críticas</p>
-          <p className="text-2xl font-bold text-orange-700">{criticalCampaigns}</p>
-          <p className="text-xs text-muted-foreground mt-1">Requerem ação imediata</p>
+        <Card className="p-6 bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-muted-foreground mb-1">CPC Médio</p>
+              <p className="text-2xl font-bold text-foreground">R$ {avgCPC}</p>
+            </div>
+            <TrendingDown className="w-6 h-6 text-orange-600" />
+          </div>
         </Card>
       </div>
 
       {/* Tabs */}
-      <Tabs defaultValue="overview" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-          <TabsTrigger value="excellent">⭐ Excelentes</TabsTrigger>
-          <TabsTrigger value="critical">🔴 Críticas</TabsTrigger>
+          <TabsTrigger value="excellent">Excelentes ({excellentCampaigns.length})</TabsTrigger>
+          <TabsTrigger value="critical">Críticas ({criticalCampaigns.length})</TabsTrigger>
         </TabsList>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
-          <div className="space-y-3">
-            {campaignsData.map((campaign) => {
-              const config = statusConfig[campaign.status];
-              const StatusIcon = config.icon;
-
-              return (
-                <Card key={campaign.name} className={`p-5 border-l-4 ${config.bgCard}`}>
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="flex items-center gap-3 flex-1">
-                      <StatusIcon className="w-5 h-5 flex-shrink-0" />
-                      <div>
-                        <h3 className="font-semibold text-foreground">{campaign.name}</h3>
-                        <Badge className={config.color}>{config.label}</Badge>
-                      </div>
+          <div className="space-y-4">
+            {campaignsData.map((campaign) => (
+              <Card key={campaign.name} className={`p-6 border-2 ${getStatusColor(campaign.status)}`}>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    {getStatusIcon(campaign.status)}
+                    <div>
+                      <h3 className="font-semibold text-foreground">{campaign.name}</h3>
+                      <Badge variant="outline" className="mt-1">
+                        {campaign.status === 'excellent' ? '⭐ Excelente' : campaign.status === 'good' ? '✅ Bom' : campaign.status === 'warning' ? '⚠️ Atenção' : '❌ Crítico'}
+                      </Badge>
                     </div>
                   </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Investimento</p>
-                      <p className="font-semibold text-foreground">R$ {campaign.investment.toFixed(2)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Impressões</p>
-                      <p className="font-semibold text-foreground">{campaign.impressions.toLocaleString()}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">Cliques (all)</p>
-                      <p className="font-semibold text-foreground">{campaign.clicks}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">CTR</p>
-                      <p className="font-semibold text-foreground">{campaign.ctr.toFixed(2)}%</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-muted-foreground">CPC</p>
-                      <p className="font-semibold text-foreground">R$ {campaign.cpc.toFixed(2)}</p>
-                    </div>
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">CTR</p>
+                    <p className="text-2xl font-bold text-foreground">{campaign.ctr.toFixed(2)}%</p>
                   </div>
+                </div>
 
-                  <div className="bg-white/50 p-3 rounded-lg border border-white/80">
-                    <p className="text-sm font-semibold text-foreground mb-1">💡 Recomendação:</p>
-                    <p className="text-sm text-muted-foreground">{campaign.recommendation}</p>
+                <div className="grid grid-cols-4 gap-4 mb-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Investimento</p>
+                    <p className="font-semibold text-foreground">R$ {campaign.investment.toFixed(2)}</p>
                   </div>
-                </Card>
-              );
-            })}
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Impressões</p>
+                    <p className="font-semibold text-foreground">{campaign.impressions.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Cliques</p>
+                    <p className="font-semibold text-foreground">{campaign.clicks}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">CPC</p>
+                    <p className="font-semibold text-foreground">R$ {campaign.cpc.toFixed(2)}</p>
+                  </div>
+                </div>
+
+                <div className="bg-white/50 p-3 rounded-lg">
+                  <p className="text-sm text-foreground">
+                    <strong>💡 Recomendação:</strong> {campaign.recommendation}
+                  </p>
+                </div>
+              </Card>
+            ))}
           </div>
         </TabsContent>
 
         {/* Excellent Tab */}
         <TabsContent value="excellent" className="space-y-4">
-          <div className="space-y-3">
-            {campaignsData
-              .filter(c => c.status === 'excellent')
-              .map((campaign) => {
-                const config = statusConfig[campaign.status];
-                const StatusIcon = config.icon;
-
-                return (
-                  <Card key={campaign.name} className={`p-5 border-l-4 ${config.bgCard}`}>
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3 flex-1">
-                        <StatusIcon className="w-5 h-5 flex-shrink-0" />
-                        <div>
-                          <h3 className="font-semibold text-foreground">{campaign.name}</h3>
-                          <Badge className={config.color}>{config.label}</Badge>
-                        </div>
-                      </div>
+          {excellentCampaigns.length > 0 ? (
+            excellentCampaigns.map((campaign) => (
+              <Card key={campaign.name} className="p-6 border-2 bg-green-50 border-green-200">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="w-6 h-6 text-green-600" />
+                    <div>
+                      <h3 className="font-semibold text-foreground">{campaign.name}</h3>
+                      <p className="text-sm text-green-700 mt-1">⭐ Excelente Performance</p>
                     </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">CTR</p>
+                    <p className="text-2xl font-bold text-green-600">{campaign.ctr.toFixed(2)}%</p>
+                  </div>
+                </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Investimento</p>
-                        <p className="font-semibold text-foreground">R$ {campaign.investment.toFixed(2)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Impressões</p>
-                        <p className="font-semibold text-foreground">{campaign.impressions.toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Cliques (all)</p>
-                        <p className="font-semibold text-foreground">{campaign.clicks}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">CTR</p>
-                        <p className="font-semibold text-foreground">{campaign.ctr.toFixed(2)}%</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">CPC</p>
-                        <p className="font-semibold text-foreground">R$ {campaign.cpc.toFixed(2)}</p>
-                      </div>
-                    </div>
+                <div className="grid grid-cols-4 gap-4 mb-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Investimento</p>
+                    <p className="font-semibold text-foreground">R$ {campaign.investment.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Impressões</p>
+                    <p className="font-semibold text-foreground">{campaign.impressions.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Cliques</p>
+                    <p className="font-semibold text-foreground">{campaign.clicks}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">CPC</p>
+                    <p className="font-semibold text-foreground">R$ {campaign.cpc.toFixed(2)}</p>
+                  </div>
+                </div>
 
-                    <div className="bg-green-100/50 p-3 rounded-lg border border-green-200">
-                      <p className="text-sm font-semibold text-green-900 mb-1">✅ Ação Recomendada:</p>
-                      <p className="text-sm text-green-800">{campaign.recommendation}</p>
-                    </div>
-                  </Card>
-                );
-              })}
-          </div>
+                <div className="bg-white/50 p-3 rounded-lg">
+                  <p className="text-sm text-foreground">
+                    <strong>💡 Recomendação:</strong> {campaign.recommendation}
+                  </p>
+                </div>
+              </Card>
+            ))
+          ) : (
+            <Card className="p-6 text-center">
+              <p className="text-muted-foreground">Nenhuma campanha excelente no momento</p>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Critical Tab */}
         <TabsContent value="critical" className="space-y-4">
-          <div className="space-y-3">
-            {campaignsData
-              .filter(c => c.status === 'critical' || c.status === 'warning')
-              .map((campaign) => {
-                const config = statusConfig[campaign.status];
-                const StatusIcon = config.icon;
-
-                return (
-                  <Card key={campaign.name} className={`p-5 border-l-4 ${config.bgCard}`}>
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex items-center gap-3 flex-1">
-                        <StatusIcon className="w-5 h-5 flex-shrink-0" />
-                        <div>
-                          <h3 className="font-semibold text-foreground">{campaign.name}</h3>
-                          <Badge className={config.color}>{config.label}</Badge>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-4">
-                      <div>
-                        <p className="text-xs text-muted-foreground">Investimento</p>
-                        <p className="font-semibold text-foreground">R$ {campaign.investment.toFixed(2)}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Impressões</p>
-                        <p className="font-semibold text-foreground">{campaign.impressions.toLocaleString()}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">Cliques (all)</p>
-                        <p className="font-semibold text-foreground">{campaign.clicks}</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">CTR</p>
-                        <p className="font-semibold text-foreground">{campaign.ctr.toFixed(2)}%</p>
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground">CPC</p>
-                        <p className="font-semibold text-foreground">R$ {campaign.cpc.toFixed(2)}</p>
-                      </div>
-                    </div>
-
-                    <div className={`${campaign.status === 'critical' ? 'bg-red-100/50 border-red-200' : 'bg-orange-100/50 border-orange-200'} p-3 rounded-lg border`}>
-                      <p className={`text-sm font-semibold ${campaign.status === 'critical' ? 'text-red-900' : 'text-orange-900'} mb-1`}>
-                        {campaign.status === 'critical' ? '🔴 Ação Urgente:' : '⚠️ Ação Necessária:'}
+          {criticalCampaigns.length > 0 ? (
+            criticalCampaigns.map((campaign) => (
+              <Card key={campaign.name} className={`p-6 border-2 ${getStatusColor(campaign.status)}`}>
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    {getStatusIcon(campaign.status)}
+                    <div>
+                      <h3 className="font-semibold text-foreground">{campaign.name}</h3>
+                      <p className={`text-sm mt-1 ${campaign.status === 'warning' ? 'text-yellow-700' : 'text-red-700'}`}>
+                        {campaign.status === 'warning' ? '⚠️ Requer Atenção' : '❌ Crítico'}
                       </p>
-                      <p className={`text-sm ${campaign.status === 'critical' ? 'text-red-800' : 'text-orange-800'}`}>{campaign.recommendation}</p>
                     </div>
-                  </Card>
-                );
-              })}
-          </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-muted-foreground">CTR</p>
+                    <p className={`text-2xl font-bold ${campaign.status === 'warning' ? 'text-yellow-600' : 'text-red-600'}`}>
+                      {campaign.ctr.toFixed(2)}%
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-4 gap-4 mb-4">
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Investimento</p>
+                    <p className="font-semibold text-foreground">R$ {campaign.investment.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Impressões</p>
+                    <p className="font-semibold text-foreground">{campaign.impressions.toLocaleString()}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">Cliques</p>
+                    <p className="font-semibold text-foreground">{campaign.clicks}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground mb-1">CPC</p>
+                    <p className="font-semibold text-foreground">R$ {campaign.cpc.toFixed(2)}</p>
+                  </div>
+                </div>
+
+                <div className="bg-white/50 p-3 rounded-lg">
+                  <p className="text-sm text-foreground">
+                    <strong>💡 Recomendação:</strong> {campaign.recommendation}
+                  </p>
+                </div>
+              </Card>
+            ))
+          ) : (
+            <Card className="p-6 text-center">
+              <p className="text-muted-foreground">Nenhuma campanha crítica no momento</p>
+            </Card>
+          )}
         </TabsContent>
       </Tabs>
-
-      {/* Tips */}
-      <Card className="p-6 bg-blue-50 border-blue-200">
-        <div className="flex gap-3">
-          <Zap className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div>
-            <h4 className="font-semibold text-blue-900 mb-2">⚡ Dicas para Próxima Semana</h4>
-            <ul className="space-y-1 text-sm text-blue-800">
-              <li>• Escale as campanhas excelentes (VDS-ADSTRIGENTE e ENGAJ-VIBRO) aumentando orçamento em 30-50%</li>
-              <li>• Pause EGJ-Bubble Vibes e reformule criativos antes de reiniciar</li>
-              <li>• Teste novos públicos para ENGAJ-PICO PULSE (CTR baixo pode ser público inadequado)</li>
-              <li>• Renomeie campanhas de teste e valide performance antes de escalar</li>
-              <li>• Monitore diariamente nos primeiros 3 dias após mudanças</li>
-            </ul>
-          </div>
-        </div>
-      </Card>
     </div>
   );
 }
